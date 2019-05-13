@@ -58,7 +58,7 @@ def predict():
 
 
     for x in data:
-        cur.execute('''SELECT DISTINCT Symptom_CUI FROM GBXWxnrJv5.`disease` WHERE Symptom='{0}';'''.format(x))
+        cur.execute('''SELECT DISTINCT Symptom_CUI FROM 5ihj6OJA0X.`disease` WHERE Symptom='{0}';'''.format(x))
         search.append(cur.fetchone()[0])
     
     sample = np.zeros((len(features),), dtype=np.int)
@@ -79,7 +79,7 @@ def predict():
     diseases = []
 
     for x in model.classes_:
-        cur.execute('''SELECT DISTINCT Disease_UMLS FROM GBXWxnrJv5.`disease` WHERE Disease_CUI = '{0}';'''.format(x))
+        cur.execute('''SELECT DISTINCT Disease_UMLS FROM 5ihj6OJA0X.`disease` WHERE Disease_CUI = '{0}';'''.format(x))
         diseases.append(cur.fetchone()[0])
     
 
