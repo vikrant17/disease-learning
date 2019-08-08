@@ -11,7 +11,7 @@ from sklearn.externals import joblib
 
 app = Flask(__name__)
 
-
+# SQL config
 app.config['MYSQL_HOST'] = 'remotemysql.com'
 app.config['MYSQL_USER'] = 'vMg935rEqf'
 app.config['MYSQL_PASSWORD'] = 'SkgUJ4EGYq'
