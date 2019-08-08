@@ -57,7 +57,7 @@ def predict():
 
     for x in model.classes_:
         cur.execute(
-            '''SELECT DISTINCT Disease_UMLS FROM vMg935rEqf.`disease-symptom` WHERE Disease_CUI = '{0}';'''.format(x))
+            '''SELECT DISTINCT Disease FROM vMg935rEqf.`disease-symptom` WHERE Disease_CUI = '{0}';'''.format(x))
         diseases.append(cur.fetchone()[0])
 
     prob_per_class_dictionary = list(zip(diseases, results))
