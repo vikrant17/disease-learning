@@ -28,7 +28,7 @@ symptoms = f.read().split(',')
 f.close()
 
 feature_dict = {}
-for i,f in enumerate(features):
+for i, f in enumerate(features):
     feature_dict[f] = i
 
 
@@ -37,44 +37,38 @@ def predict():
     search = []
     data = request.get_json()['symptoms']
 
-    
-
     cur = mysql.connection.cursor()
 
-
     for x in data:
-        cur.execute('''SELECT DISTINCT Symptom_CUI FROM vMg935rEqf.`disease-symptom` WHERE Symptom='{0}';'''.format(x))
+        cur.execute(
+            '''SELECT DISTINCT Symptom_CUI FROM vMg935rEqf.`disease-symptom` WHERE Symptom='{0}';'''.format(x))
         search.append(cur.fetchone()[0])
-    
+
     sample = np.zeros((len(features),), dtype=np.int)
     sample = sample.tolist()
-    for i,s in enumerate(search):
+    for i, s in enumerate(search):
         sample[feature_dict[s]] = 1
 
-    sample = np.array(sample).reshape(1,len(sample))
+    sample = np.array(sample).reshape(1, len(sample))
 
     results = model.predict_proba(sample)[0]
-
-
 
     diseases = []
 
     for x in model.classes_:
-        cur.execute('''SELECT DISTINCT Disease_UMLS FROM vMg935rEqf.`disease-symptom` WHERE Disease_CUI = '{0}';'''.format(x))
+        cur.execute(
+            '''SELECT DISTINCT Disease_UMLS FROM vMg935rEqf.`disease-symptom` WHERE Disease_CUI = '{0}';'''.format(x))
         diseases.append(cur.fetchone()[0])
-    
 
     prob_per_class_dictionary = list(zip(diseases, results))
 
-
     results_ordered_by_probability = list(map(
-    lambda x: {"disease": x[0],"prop": x[1] * 100}, 
-    sorted(zip(diseases, results), key=lambda x: x[1], reverse=True)))
-    
+        lambda x: {"disease": x[0], "prop": x[1] * 100},
+        sorted(zip(diseases, results), key=lambda x: x[1], reverse=True)))
+
     return jsonify(results_ordered_by_probability[0:10])
 
 
-   
 @app.route('/symptom', methods=['GET'])
 def symptom():
     return jsonify(symptoms)
