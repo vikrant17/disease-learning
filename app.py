@@ -9,15 +9,13 @@ from flask_mysqldb import MySQL
 from sklearn.externals import joblib
 
 
-
-
 app = Flask(__name__)
 
 
 app.config['MYSQL_HOST'] = 'remotemysql.com'
-app.config['MYSQL_USER'] = 'GBXWxnrJv5'
-app.config['MYSQL_PASSWORD'] = 'SUpKmIxT3N'
-app.config['MYSQL_DB'] = 'GBXWxnrJv5'
+app.config['MYSQL_USER'] = 'vMg935rEqf'
+app.config['MYSQL_PASSWORD'] = 'SkgUJ4EGYq'
+app.config['MYSQL_DB'] = 'vMg935rEqf'
 
 mysql = MySQL(app)
 
@@ -34,19 +32,6 @@ for i,f in enumerate(features):
     feature_dict[f] = i
 
 
-
-
-
-
-
-# def findFeatures(disease):
-#     return result.loc[result['Disease'] == disease]["Symptom"].values.astype(str)
-
-
-
-# res = list(results_ordered_by_probability)
-
-
 @app.route('/predict', methods=['POST'])
 def predict():
     search = []
@@ -58,7 +43,7 @@ def predict():
 
 
     for x in data:
-        cur.execute('''SELECT DISTINCT Symptom_CUI FROM GBXWxnrJv5.`disease` WHERE Symptom='{0}';'''.format(x))
+        cur.execute('''SELECT DISTINCT Symptom_CUI FROM vMg935rEqf.`disease-symptom` WHERE Symptom='{0}';'''.format(x))
         search.append(cur.fetchone()[0])
     
     sample = np.zeros((len(features),), dtype=np.int)
@@ -70,16 +55,12 @@ def predict():
 
     results = model.predict_proba(sample)[0]
 
-    
 
-
-
-    
 
     diseases = []
 
     for x in model.classes_:
-        cur.execute('''SELECT DISTINCT Disease_UMLS FROM GBXWxnrJv5.`disease` WHERE Disease_CUI = '{0}';'''.format(x))
+        cur.execute('''SELECT DISTINCT Disease_UMLS FROM vMg935rEqf.`disease-symptom` WHERE Disease_CUI = '{0}';'''.format(x))
         diseases.append(cur.fetchone()[0])
     
 
@@ -90,32 +71,8 @@ def predict():
     lambda x: {"disease": x[0],"prop": x[1] * 100}, 
     sorted(zip(diseases, results), key=lambda x: x[1], reverse=True)))
     
-    # cur.execute(command)
-    # mysql.connection.commit()
- 
-    # rv = cur.fetchall()
-    # return str(rv)
     return jsonify(results_ordered_by_probability[0:10])
 
-
-# def findData(query):
-#     if (query == ''): 
-#       return []
-
-#     filteredData = []
-    
-#     for f in symptoms:
-#         if re.search(query, f) != None:
-#             filteredData.append(f)
-    
-#     return filteredData
-
-  
-    
-# @app.route('/search', methods=['GET'])
-# def search():
-#     searchword = request.args.get('key', '')
-#     return jsonify(findData(searchword))
 
    
 @app.route('/symptom', methods=['GET'])
